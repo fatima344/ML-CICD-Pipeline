@@ -27,7 +27,8 @@ gamma = svm_config.get("gamma", "scale")
 
 # Load dataset
 data_path = "data/Aggregation.txt"
-data = pd.read_csv(data_path, sep="\t", skiprows=7, header=None, names=['X1', 'X2', 'y'])
+data = pd.read_csv(data_path, sep="\t", skiprows=7, header=None,
+                   names=['X1', 'X2', 'y'])
 
 # Extract features and labels
 X = data[['X1', 'X2']].values
@@ -39,8 +40,10 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # Train the SVM model
-print(f"Training SVM with kernel={kernel}, C={C}, degree={degree}, gamma={gamma}...")
-model = OneVsRestClassifier(SVC(kernel=kernel, C=C, degree=degree, gamma=gamma, random_state=random_seed))
+print(f"Training SVM with kernel={kernel}, C={C}, degree={degree}, "
+      f"gamma={gamma}...")
+model = OneVsRestClassifier(SVC(kernel=kernel, C=C, degree=degree,
+                            gamma=gamma, random_state=random_seed))
 model.fit(X_train, y_train)
 
 # Predictions
@@ -50,15 +53,14 @@ test_predictions = model.predict(X_test)
 # Calculate accuracy and classification report
 train_accuracy = accuracy_score(y_train, train_predictions)
 test_accuracy = accuracy_score(y_test, test_predictions)
-class_report = classification_report(y_test, test_predictions, output_dict=True)
+class_rp = classification_report(y_test, test_predictions, output_dict=True)
 
 # Save metrics
 metrics = {
     "train_accuracy": train_accuracy,
     "test_accuracy": test_accuracy,
-    "classification_report": class_report
+    "classification_report": class_rp
 }
-
 metrics_file = "metrics.json"
 with open(metrics_file, "w") as f:
     json.dump(metrics, f, indent=4)
@@ -71,32 +73,36 @@ model_file = os.path.join(model_dir, "svm_model.pkl")
 joblib.dump(model, model_file)
 print("Model saved to", model_file)
 
+
 # Function to plot decision boundary
 def plot_decision_boundary(X, y, clf, filename="static/decision_boundary.png"):
     zero_one_colourmap = ['r', 'g', 'b', 'c', 'm', 'y', 'k']
     matplotlib_axes_logger.setLevel('ERROR')
-
     X_set, y_set = X, y
-    X1, X2 = np.meshgrid(np.arange(start=X_set[:, 0].min() - 1, stop=X_set[:, 0].max() + 1, step=0.1),
-                         np.arange(start=X_set[:, 1].min() - 1, stop=X_set[:, 1].max() + 1, step=0.1))
-
+    X1, X2 = np.meshgrid(
+        np.arange(start=X_set[:, 0].min() - 1,
+                  stop=X_set[:, 0].max() + 1, step=0.1),
+        np.arange(start=X_set[:, 1].min() - 1,
+                  stop=X_set[:, 1].max() + 1, step=0.1)
+    )
     plt.figure(figsize=(10, 5))
-    plt.contourf(X1, X2, clf.predict(np.array([X1.ravel(), X2.ravel()]).T).reshape(X1.shape),
-                 alpha=0.75, cmap=ListedColormap(zero_one_colourmap[:len(np.unique(y_set))]))
-    
+    cmap = ListedColormap(zero_one_colourmap[:len(np.unique(y_set))])
+    contour_input = np.array([X1.ravel(), X2.ravel()]).T
+    plt.contourf(X1, X2, clf.predict(contour_input).reshape(X1.shape),
+                 alpha=0.75, cmap=cmap)
+
     plt.xlim(X1.min(), X1.max())
     plt.ylim(X2.min(), X2.max())
-
     for i, j in enumerate(np.unique(y_set)):
-        plt.scatter(X_set[y_set == j, 0], X_set[y_set == j, 1], color=zero_one_colourmap[i], label=j)  # FIXED COLOR
-
+        plt.scatter(X_set[y_set == j, 0], X_set[y_set == j, 1],
+                    color=zero_one_colourmap[i], label=j)
     plt.title(f'SVM Decision Boundary (Kernel: {kernel})')
     plt.xlabel('X1')
     plt.ylabel('X2')
     plt.legend()
-    plt.savefig(filename)  # Save the plot as an image
+    plt.savefig(filename)
     print(f"Decision boundary plot saved as {filename}")
-    plt.close()  # Prevent displaying the image
+    plt.close()
 
 
 # Generate and save decision boundary plot
