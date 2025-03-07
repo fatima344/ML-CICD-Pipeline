@@ -72,7 +72,7 @@ joblib.dump(model, model_file)
 print("Model saved to", model_file)
 
 # Function to plot decision boundary
-def plot_decision_boundary(X, y, clf, filename="decision_boundary.png"):
+def plot_decision_boundary(X, y, clf, filename="static/decision_boundary.png"):
     zero_one_colourmap = ['r', 'g', 'b', 'c', 'm', 'y', 'k']
     matplotlib_axes_logger.setLevel('ERROR')
 
