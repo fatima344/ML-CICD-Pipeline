@@ -1,0 +1,10 @@
+{
+  "train_ratio": 0.7,
+  "random_seed": 42,
+  "svm": {
+    "kernel": "rbf",
+    "C": 1.0,
+    "degree": 3,
+    "gamma": "scale"
+  }
+}
