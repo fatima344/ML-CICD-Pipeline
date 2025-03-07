@@ -1,0 +1,38 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    types: [opened]
+    branches: [dev, test]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+      - name: Install Flake8
+        run: |
+          pip install flake8
+      - name: Run Flake8 on src folder
+        run: |
+          flake8 src/
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+      - name: Install Dependencies
+        run: |
+          pip install pytest
+          pip install -r requirements.txt
+      - name: Run Tests
+        run: |
+          pytest
